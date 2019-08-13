@@ -39,7 +39,7 @@ public class CustomerService {
             throw new SignUpRestrictedException("SGR-004","Weak password!");
         String[] encrypted = pcp.encrypt(userEntity.getPassword());
         userEntity.setPassword(encrypted[1]);
-        userEntity.setSalt(encrypted[0]);
+        userEntity.setSalt(encrypted[0]); //commet
 
         return userDao.createUser(userEntity);
     }
