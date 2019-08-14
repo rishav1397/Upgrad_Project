@@ -14,14 +14,17 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Service
 public class CustomerService {
     @Autowired
     private customerDao userDao;
+    @Autowired
     private customerAuthTokenDao catd;
     @Autowired
     private PasswordCryptographyProvider pcp;
@@ -88,6 +91,7 @@ public class CustomerService {
                 JwtTokenProvider jwtTokenProvider = new JwtTokenProvider(encryptedPassword);
                 // Store that token in the database using UserAuthTokenEntity
                 CustomerAuthEntity userAuthTokenEntity = new CustomerAuthEntity();
+                userAuthTokenEntity.setUuid(UUID.randomUUID().toString());
                 userAuthTokenEntity.setCustomer(user);
                 ZonedDateTime now = ZonedDateTime.now();
                 ZonedDateTime expiry = now.plusHours(8);
@@ -141,13 +145,18 @@ public class CustomerService {
         return c.getCustomer();
     }
     public CustomerEntity updateCustomerPassword(String o,String n,CustomerEntity c)throws UpdateCustomerException {
+        String encryptedPassword = pcp.encrypt(o, c.getSalt());
+
+
+        String newpass=pcp.encrypt(n,c.getSalt());
+        System.out.println("HOOOOOOOOOOOOOOOOOO "+c.getPassword()+" "+o);
         if(o.length()==0||n.length()==0)
             throw new UpdateCustomerException("UCR-003","No field should be empty");
         if(!passwordValidation(n))
             throw new UpdateCustomerException("UCR-001","Weak password!");
-        if(!c.getPassword().equals(o))
+        if(!c.getPassword().equals(encryptedPassword))
             throw new UpdateCustomerException("UCR-004","Incorrect old password!");
-        c.setPassword(n);
+        c.setPassword(newpass);
         userDao.updateCustomer(c);
 
         return c;

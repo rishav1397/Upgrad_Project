@@ -15,31 +15,36 @@ import static org.hibernate.id.PersistentIdentifierGenerator.SCHEMA;
 
 
 @Entity
-@Table(name="customer",schema = SCHEMA)
+@Table(name="customer")
 
 public class CustomerEntity {
     @Id
-    private Integer id=2;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     @NotNull
-    @Size(max=200)
+    @Size(max = 200)
     private String uuid;
     @NotNull
-    @Size(max=30)
+    @Size(max = 30)
     private String firstname;
-    @Size(max=30)
+    @Size(max = 30)
     private String lastname;
     @NotNull
-    @Size(max=50)
+    @Size(max = 50)
     private String email;
     @NotNull
-    @Size(max=30)
+    @Size(max = 30)
     private String contact_number;
     @NotNull
-    @Size(max=255)
+    @Size(max = 255)
     private String password;
     @NotNull
-    @Size(max=255)
+    @Size(max = 255)
     private String salt;
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public int getId() {
         return id;
@@ -105,7 +110,6 @@ public class CustomerEntity {
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
-
 
 
 }

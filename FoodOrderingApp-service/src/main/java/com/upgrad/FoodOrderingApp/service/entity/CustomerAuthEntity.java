@@ -7,12 +7,13 @@ import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.validation.groups.Default;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Entity
 @Table(name="customer_auth")
-public class CustomerAuthEntity {
+public class CustomerAuthEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -20,7 +21,8 @@ public class CustomerAuthEntity {
     @Size(max = 200)
     private String uuid;
     @NotNull
-    @ManyToOne
+    @OneToOne
+    @JoinColumn(name="customer_id")
     private CustomerEntity customer_id;
 
     @NotNull
@@ -28,7 +30,7 @@ public class CustomerAuthEntity {
     private String access_token;
     @NotNull
     private ZonedDateTime login_at;
-    @NotNull
+
     private ZonedDateTime logout_at;
     @NotNull
     private ZonedDateTime expires_at;

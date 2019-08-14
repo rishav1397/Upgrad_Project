@@ -15,10 +15,11 @@ public class customerDao implements Serializable {
     private EntityManagerFactory emf;
     @Transactional
     public CustomerEntity createUser(CustomerEntity userEntity) {
-        EntityTransaction tx= entityManager.getTransaction();
+        EntityManager em=emf.createEntityManager();
+        EntityTransaction tx= em.getTransaction();
         try{
             tx.begin();
-            entityManager.persist(userEntity);
+            em.persist(userEntity);
             tx.commit();
 
         }catch (Exception e){
@@ -28,34 +29,49 @@ public class customerDao implements Serializable {
         return userEntity;
     }
     public boolean checkContact(String contact_number){
-        EntityManager em=emf.createEntityManager();
-        CustomerEntity s=em.find(CustomerEntity.class,contact_number);
+
+        Integer cn=Integer.parseInt(contact_number);
+        EntityManager em = emf.createEntityManager();
+        CustomerEntity s = em.find(CustomerEntity.class, cn);
         em.close();
         //System.out.println(s);
-        if(s==null)
+        if (s == null)
             return false;
         else
             return true;
 
-
     }
     public CustomerEntity getUserByContact(String username) {
-        try {
-            CustomerEntity userEntity = entityManager.createNamedQuery("userByContact", CustomerEntity.class)
-                    .setParameter("contact_number", username).getSingleResult();
-            return userEntity;
-        } catch (NoResultException e) {
-            return null;
-        }
+        //Integer cn=Integer.parseInt(username);
+        EntityManager em=emf.createEntityManager();
+
+        TypedQuery<CustomerEntity> query= em.createQuery("From CustomerEntity p where p.firstname=:username",CustomerEntity.class).setParameter("username",username);
+        CustomerEntity userEntity=query.getSingleResult();
+        em.close();
+
+        return userEntity;
+
     }
 
     public void updateCustomer(CustomerEntity updatedUser) {
-        entityManager.merge(updatedUser);
+        EntityManager em=emf.createEntityManager();
+
+        EntityTransaction tx= em.getTransaction();
+        try{
+            tx.begin();
+            em.merge(updatedUser);
+            tx.commit();
+
+        }catch (Exception e){
+            tx.rollback();
+            System.out.println(e);
+        }
     }
 
     public CustomerEntity getCustomer(final String access_token) {
         try {
-            CustomerEntity userEntity = entityManager.createNamedQuery("userByToken", CustomerEntity.class)
+            EntityManager em=emf.createEntityManager();
+            CustomerEntity userEntity = em.createNamedQuery("userByToken", CustomerEntity.class)
                     .setParameter("access_token", access_token).getSingleResult();
             return userEntity;
         }catch (NoResultException e){
@@ -70,4 +86,3 @@ public class customerDao implements Serializable {
         return s;
     }
 }
-

@@ -32,11 +32,9 @@ public class CategoryController {
     @RequestMapping(value="/category",method = RequestMethod.GET)
     public ResponseEntity<CategoriesListResponse>getAllCategoriesOrderedByName()throws Exception {
         List<CategoryEntity> list = cs.getAllCategoriesOrderedByName();
-
         List<CategoryListResponse>lt=new ArrayList<CategoryListResponse>();
         for(int i=0;i<list.size();i++){
             CategoryListResponse cvd=new CategoryListResponse().id(UUID.fromString(list.get(i).getUuid())).categoryName(list.get(i).getCategoryName());
-
             lt.add(cvd);
         }
 
